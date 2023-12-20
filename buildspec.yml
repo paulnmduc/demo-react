@@ -1,0 +1,25 @@
+version: 0.2
+
+env:
+    shell: bash
+    variables:
+      S3_BUCKET: "{{S3_BUCKET}}"
+phases:
+  install:
+    runtime-versions:
+        nodejs: 14
+  build:
+    commands:
+        - echo Build started 
+        - npm install
+        - npm run build
+  post_build:
+    commands:
+        - echo upload static files to S3 bucket
+        - cd build
+        - aws s3 sync . s3://${S3_BUCKET}/ --delete --include "*"
+artifacts:
+  files:
+    - '**/**'
+  base-directory: build
+  discard-paths: no
